@@ -1,32 +1,38 @@
 <template>
   <div class="type-nav">
     <div class="container">
-      <div @mouseleave="currentIndex=-1">
+      <div @mouseleave="leaveCategoryContainer" @mouseenter="enterCategoryContainer">
         <h2 class="all">全部商品分类</h2>
-        <div class="sort">
-          <div class="all-sort-list2" @click="goSearch">
-            <div class="item" :class="{cur: currentIndex===index}" v-for="(c1, index) in categoryList"
-                 :key="c1.categoryId">
-              <h3 @mouseenter="changeIndex(index)">
-                <a :data-categoryname="c1.categoryName" :data-category1id="c1.categoryId">{{ c1.categoryName }}</a>
-              </h3>
-              <div class="item-list clearfix" :style="{display: currentIndex === index ? 'block' : 'none'}">
-                <div class="subitem">
-                  <dl class="fore" v-for="c2 in c1.categoryChild" :key="c2.categoryId">
-                    <dt>
-                      <a :data-categoryname="c2.categoryName" :data-category2id="c2.categoryId">{{ c2.categoryName }}</a>
-                    </dt>
-                    <dd>
-                      <em v-for="c3 in c2.categoryChild" :key="c3.categoryId">
-                        <a :data-categoryname="c3.categoryName" :data-category3id="c3.categoryId">{{ c3.categoryName }}</a>
-                      </em>
-                    </dd>
-                  </dl>
+        <transition name="sort">
+          <div class="sort" v-show="showSort">
+            <div class="all-sort-list2" @click="goSearch">
+              <div class="item" :class="{cur: currentIndex===index}" v-for="(c1, index) in categoryList"
+                   :key="c1.categoryId">
+                <h3 @mouseenter="changeIndex(index)">
+                  <a :data-categoryname="c1.categoryName" :data-category1id="c1.categoryId">{{ c1.categoryName }}</a>
+                </h3>
+                <div class="item-list clearfix" :style="{display: currentIndex === index ? 'block' : 'none'}">
+                  <div class="subitem">
+                    <dl class="fore" v-for="c2 in c1.categoryChild" :key="c2.categoryId">
+                      <dt>
+                        <a :data-categoryname="c2.categoryName" :data-category2id="c2.categoryId">{{
+                            c2.categoryName
+                          }}</a>
+                      </dt>
+                      <dd>
+                        <em v-for="c3 in c2.categoryChild" :key="c3.categoryId">
+                          <a :data-categoryname="c3.categoryName" :data-category3id="c3.categoryId">{{
+                              c3.categoryName
+                            }}</a>
+                        </em>
+                      </dd>
+                    </dl>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </transition>
       </div>
       <nav class="nav">
         <a href="###">服装城</a>
@@ -50,11 +56,14 @@ export default {
   name: "TypeNav",
   data() {
     return {
-      currentIndex: -1
+      currentIndex: -1,
+      showSort: true
     }
   },
   mounted() {
-    this.$store.dispatch('getCategoryList')
+    if (this.$route.path !== '/home') {
+      this.showSort = false;
+    }
   },
   computed: {
     // 通过对象的方式获取 state 值
@@ -69,17 +78,32 @@ export default {
     }, 10),
     // 前往搜索页
     goSearch(event) {
-      let { categoryname } = event.target.dataset;
+      let {categoryname} = event.target.dataset;
       if (categoryname) {
-        let query = {categoryName: categoryname}
-        let { category1id, category2id, category3id } = event.target.dataset;
-        category1id && (query.category1id = category1id)
-        category2id && (query.category2id = category2id)
-        category3id && (query.category3id = category3id)
-        this.$router.push({
-          name: 'search',
-          query
-        })
+        let query = {categoryName: categoryname, keyword: this.$route.query.keyword}
+        let {category1id, category2id, category3id} = event.target.dataset;
+
+        // 保证 category1Id / category2Id / category3Id 只出现一个
+        (category1id && (query.category1Id = category1id))
+        ||
+        (category2id && (query.category2Id = category2id))
+        ||
+        (category3id && (query.category3Id = category3id))
+
+        this.$router.push({name: 'search', query})
+      }
+    },
+    // 离开分类容器
+    leaveCategoryContainer() {
+      this.currentIndex = -1;
+      if (this.$route.path !== '/home') {
+        this.showSort = false;
+      }
+    },
+    // 进入分类容器
+    enterCategoryContainer() {
+      if (this.$route.path !== '/home') {
+        this.showSort = true;
       }
     }
   }
@@ -207,6 +231,18 @@ export default {
           }
         }
       }
+    }
+
+    .sort-enter-active, .sort-leave-active {
+      transition: all .2s;
+    }
+
+    .sort-enter, .sort-leave-to {
+      height: 0;
+    }
+
+    .sort-enter-to, .sort-leave {
+      height: 461px;
     }
   }
 }

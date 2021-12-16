@@ -239,6 +239,8 @@ this.$router.push({
 
 ### Vuex 模块式开发
 
+<img src="README.assets/172c5093bb74331ctplv-t2oaga2asx-watermark.awebp" alt="img" style="zoom:67%;" />
+
 vuex 基本概念：TODO
 
 1. 在 `store` 目录下创建 `modules` 文件夹
@@ -297,7 +299,40 @@ vuex 基本概念：TODO
 
    ![image-20211215154437603](README.assets/image-20211215154437603.png)
 
-> 别忘记在 `main.js` 中引入 store 哟!
+> 别忘记在 `main.js` 中引入 store 哟
+
+### Vue Bus 全局消息总线
+
+```javascript
+new Vue({
+    render: h => h(App),
+    // 配置全局消息总线
+    beforeCreate() {
+        Vue.prototype.$bus = this
+    },
+    router,
+    store
+}).$mount('#app')
+```
+
+> 使用
+
+注册 & 销毁监听事件
+
+```javascript
+mounted() {
+    this.$bus.$on('updateKeyword', newValue => this.keyword = newValue)
+},
+destroyed() {
+    this.$bus.off('updateKeyword')
+}
+```
+
+调用监听事件
+
+```javascript
+this.$bus.$emit('updateKeyword', this.searchObj.keyword);
+```
 
 ## 业务逻辑扩展
 
@@ -494,5 +529,177 @@ Lodash JS 库使用：https://www.lodashjs.com/
        this.currentIndex = index
    }, 50)
    ```
+
+### Mock 模拟测试数据
+
+应用场景：无需等待后端开发完接口，根据接口文档编写相关格式数据后，即可在前端本地进行测试，提高开发效率
+
+官网：https://github.com/nuysoft/Mock/wiki
+
+学习笔记：TODO
+
+使用：
+
+1. 安装 mock
+
+   ```powershell
+   npm install --save mockjs
+   ```
+
+2. 在 `src` 下创建 `mock`文件夹，根据接口文档，创建对应的 JSON 数据文件
+
+   JSON 文件的数据格式应该和接口文档的一样
+
+   ```json
+   [
+       {
+           "id": "1",
+           "imgUrl": "/images/banner1.jpg"
+       },
+       {
+           "id": "2",
+           "imgUrl": "/images/banner2.jpg"
+       },
+       {
+           "id": "3",
+           "imgUrl": "/images/banner3.jpg"
+       },
+       {
+           "id": "4",
+           "imgUrl": "/images/banner4.jpg"
+       }
+   ]
+   ```
+
+3. 创建 `mock/index.js` 文件
+
+   ```javascript
+   import Mock from 'mockjs'
+   
+   // 引入 JSON 数据文件, webpack 在进行打包时会默认暴露 JSON 文件，所以不需要额外配置暴露
+   import banners from './banners.json'
+   import floors from './floors.json'
+   
+   // 配置 mock 数据
+   Mock.mock('/mock/banner', banners)
+   Mock.mock('/mock/floor', floors)
+   ```
+
+4. 在 `main.js` 中引入
+
+   ```javascript
+   // 引入 mock 数据
+   import '@/mock'
+   ```
+
+PS：如果模拟的数据中带有 img 这种静态资源，要先将对应的资源放在 `public/images` 文件夹中
+
+### Swiper 轮播图插件使用
+
+swiper：一个专门用于对触摸滑动效果进行处理的插件; 
+
+官网：https://www.swiper.com.cn/
+
+使用：
+
+1. 安装 swiper
+
+   ```powershell
+   npm i --save swiper@5
+   ```
+
+2. 在 `main.js` 中引入 CSS 样式
+
+   ```javascript
+   // 引入 swiper 样式
+   import 'swiper/css/swiper.min.css'
+   ```
+
+3. 在需要使用 swiper 的组件中引入对应的 JS 库
+
+   ```javascript
+   import Swiper from 'swiper'
+   ```
+
+4. 使用初始化 Swiper
+
+   ```javascript
+   var mySwiper = new Swiper ('.swiper', {
+       direction: 'vertical', // 垂直切换选项
+       loop: true, // 循环模式选项
+   
+       // 如果需要分页器
+       pagination: {
+           el: '.swiper-pagination',
+       },
+   
+       // 如果需要前进后退按钮
+       navigation: {
+           nextEl: '.swiper-button-next',
+           prevEl: '.swiper-button-prev',
+       },
+   
+       // 如果需要滚动条
+       scrollbar: {
+           el: '.swiper-scrollbar',
+       },
+   })  
+   ```
+
+   参考配置：https://www.swiper.com.cn/api/index.html
+
+### Watch + $nextTick 解决异步语句渲染问题
+
+问题：许多 JS 插件库都是需要操作 DOM 元素的，但在 Vue 中存在单纯的 `mounted()` 是不等待异步语句的加载的(例如 v-for 等)，如果在 `mounted()` 中调用对应的 JS 插件库操作异步 DOM，这时候是**无法生效**，因为 DOM 元素还没有被加载出来
+
+解决：**Watch + $nextTick**
+
+大体思路：利用 `watch` 监听异步数据，在异步数据更新之后调用 `$nextTick` 回调函数，该回调会在异步数据对应的异步 DOM 更新之后执行
+
+> $nextTick: 在下次 DOM 更新循环结束之后执行延迟回调。在修改数据之后立即使用这个方法，获取更新后的 DOM。
+
+```javascript
+watch: {
+    // 配置监听
+    bannerList: function() {
+        // $nextTick: 在下次 DOM 更新循环结束之后执行延迟回调。在修改数据之后立即使用这个方法，获取更新后的 DOM。
+        this.$nextTick(() => {
+            // swiper 需要在 DOM 元素渲染之后再执行才能生效
+            var mySwiper = new Swiper ('.swiper-container', {
+                loop: true, // 循环模式选项
+
+                // 如果需要分页器
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true
+                },
+
+                // 如果需要前进后退按钮
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+            })
+    	})
+    }
+}
+```
+
+## 性能优化
+
+1. 目标：全局组件中的数据获取一次即可
+
+   原因：对于全局组件中所需要的数据，不建议在对应的全局组件的 `mounted()` 生命周期时获取，因为全局组件在 SPA 单页应用中，`mounted()` 会被执行多次，导致向服务器发送过多的无效请求
+
+   解决思路：在 **SPA** 单页应用环境中, **App.vue** 将作为根组件，其 `mounted()` 生命周期函数只会被执行一次，在通过 Vuex 进行数据管理，全局组件中只用获取 Vuex state 中保存的数据即可
+
+   ```javascript
+   mounted() {
+       // 获取全局组件中的需要的数据，避免多次发出请求(通过 Vuex 发送异步请求，将数据保存到 state )
+       this.$store.dispatch('getCategoryList')
+   }
+   ```
+
+   
 
    

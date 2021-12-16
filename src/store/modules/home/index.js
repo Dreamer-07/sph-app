@@ -1,13 +1,21 @@
 // home - vux
-import productApi from "@/api/product";
+import productApi from "@/api/modules/product";
 
 const state = {
-    categoryList: []
+    categoryList: [],
+    bannerList: [],
+    floorList: []
 }
 
 const mutations = {
     GET_CRTEGORYLIST(state, categoryList) {
         state.categoryList = categoryList;
+    },
+    GET_BANNERLIST(state, bannerList) {
+        state.bannerList = bannerList;
+    },
+    GET_FLOORLIST(state, floorList) {
+        state.floorList = floorList;
     }
 }
 
@@ -19,12 +27,20 @@ const actions = {
         if (result.code === 200) {
             commit("GET_CRTEGORYLIST", result.data)
         }
+    },
+    // 获取 banner 数据
+    async getBannerList({commit}) {
+        let result = await productApi.getBannerList();
+        commit("GET_BANNERLIST", result);
+    },
+    // 获取 floor 数据
+    async getFloorList({commit}) {
+        let result = await productApi.getFloorList();
+        commit("GET_FLOORLIST", result);
     }
 }
 
-const getters = {
-
-}
+const getters = {}
 
 export default {
     state,

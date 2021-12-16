@@ -15,6 +15,10 @@ export default {
   components: {
     Header,
     Footer
+  },
+  mounted() {
+    // 获取全局组件中的需要的数据，避免多次发出请求
+    this.$store.dispatch('getCategoryList')
   }
 }
 </script>

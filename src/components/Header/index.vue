@@ -55,10 +55,17 @@ export default {
       this.$router.push({
         name: 'search', // 设置要跳转路由的 name,
         query: {        // 配置要传递的 query 参数
+          ...this.$route.query,
           keyword: this.keyword
         }
       })
     }
+  },
+  mounted() {
+    this.$bus.$on('updateKeyword', newValue => this.keyword = newValue)
+  },
+  destroyed() {
+    this.$bus.off('updateKeyword')
   }
 }
 </script>
