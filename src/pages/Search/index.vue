@@ -76,35 +76,10 @@
               </li>
             </ul>
           </div>
-          <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>共10页&nbsp;</span></div>
-            </div>
-          </div>
+          <Pagination
+              :pageNo="searchObj.pageNo" :pageSize="searchObj.pageSize" :total="total" :continuity="5"
+              @updatePageNo="updatePageNo"
+          />
         </div>
       </div>
     </div>
@@ -114,7 +89,7 @@
 <script>
 import SearchSelector from "./Childrens/SearchSelector";
 
-import {mapGetters} from 'vuex'
+import {mapGetters, mapState} from 'vuex'
 
 export default {
   name: 'Search',
@@ -130,7 +105,7 @@ export default {
         // 排序方式
         order: "1:desc",
         pageNo: 1,
-        pageSize: 10,
+        pageSize: 3,
         // 选择的筛选属性
         props: [],
         // 选择的品牌
@@ -204,12 +179,22 @@ export default {
       this.searchObj.order = newOrder;
       this.fetchData();
     },
+    // 修改页码
+    updatePageNo(pageNo) {
+      if (pageNo != this.searchObj.pageNo) {
+        this.searchObj.pageNo = pageNo;
+        this.fetchData();
+      }
+    }
   },
   components: {
     SearchSelector
   },
   computed: {
-    ...mapGetters(['goodsList'])
+    ...mapGetters(['goodsList']),
+    ...mapState({
+      total: state => state.search.productInfo.total
+    })
   },
   watch: {
     $route() {
@@ -337,6 +322,7 @@ export default {
                   background: #e1251b;
                   color: #fff;
                 }
+
                 .iconfont {
                   display: inline;
                 }
