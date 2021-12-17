@@ -15,15 +15,20 @@
               {{ searchObj.categoryName }}
               <i @click="removeCategoryName">×</i>
             </li>
-<!--            <li class="with-x" v-show="searchObj.keyword">-->
-<!--              {{ searchObj.keyword }}-->
-<!--              <i @click="removeKeyword">×</i>-->
-<!--            </li>-->
+            <li class="with-x" v-show="searchObj.keyword">
+              {{ searchObj.keyword }}
+              <i @click="removeKeyword">×</i>
+            </li>
+            <li class="with-x" v-show="searchObj.trademark">
+              {{ searchObj.trademark.split(":")[1] }}
+              <i @click="removeTrademark">×</i>
+            </li>
+
           </ul>
         </div>
 
         <!--selector-->
-        <SearchSelector/>
+        <SearchSelector @selectTrademark="selectTrademark"/>
 
         <!--details-->
         <div class="details clearfix">
@@ -146,6 +151,11 @@ export default {
     fetchData() {
       this.$store.dispatch("goSearchProduct", this.searchObj)
     },
+    // 选择品牌
+    selectTrademark(tmId, tmName) {
+      this.searchObj.trademark = `${tmId}:${tmName}`
+      this.fetchData()
+    },
     // 删除分类名
     removeCategoryName() {
       this.searchObj.categoryName = undefined;
@@ -157,15 +167,17 @@ export default {
       })
     },
     // 删除搜索关键字
-    // removeKeyword() {
-    //   this.searchObj.keyword = undefined;
-    //   this.$bus.$emit('updateKeyword', undefined);
-    //   delete this.$route.query.keyword;
-    //   this.$router.push({
-    //     name: 'search',
-    //     query: this.$route.query
-    //   })
-    // }
+    removeKeyword() {
+      this.searchObj.keyword = undefined;
+      delete this.$route.query.keyword
+      this.$bus.$emit('updateKeyword', undefined);
+      this.$router.push({name: 'search', query: {...this.$route.query, time: new Date().getTime()}})
+    },
+    // 删除品牌选择
+    removeTrademark() {
+      this.searchObj.trademark = '';
+      this.fetchData();
+    }
   },
   components: {
     SearchSelector
