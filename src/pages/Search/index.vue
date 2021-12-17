@@ -38,23 +38,11 @@
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li class="active">
-                  <a href="#">综合</a>
+                <li :class="{active: isActiveOrderType(1)}" @click="updateActiveOrderType(1)">
+                  <a>综合 <span class="iconfont" :class="isDesc()"></span></a>
                 </li>
-                <li>
-                  <a href="#">销量</a>
-                </li>
-                <li>
-                  <a href="#">新品</a>
-                </li>
-                <li>
-                  <a href="#">评价</a>
-                </li>
-                <li>
-                  <a href="#">价格⬆</a>
-                </li>
-                <li>
-                  <a href="#">价格⬇</a>
+                <li :class="{active: isActiveOrderType(2)}" @click="updateActiveOrderType(2)">
+                  <a>价格 <span class="iconfont" :class="isDesc()"></span></a>
                 </li>
               </ul>
             </div>
@@ -140,7 +128,7 @@ export default {
     return {
       searchObj: {
         // 排序方式
-        order: "",
+        order: "1:desc",
         pageNo: 1,
         pageSize: 10,
         // 选择的筛选属性
@@ -193,7 +181,29 @@ export default {
     removeAttr(index) {
       this.searchObj.props.splice(index, 1);
       this.fetchData();
-    }
+    },
+    // 是否为选择的 order type
+    isActiveOrderType(orderType) {
+      return this.searchObj.order.indexOf(orderType) !== -1;
+    },
+    // 判断为 desc / asc
+    isDesc() {
+      return this.searchObj.order.indexOf("desc") !== -1 ? 'icon-up' : 'icon-down';
+    },
+    // 修改 order type
+    updateActiveOrderType(orderType) {
+      let newOrder = orderType + ":";
+      // 判断排序的类型是否相同
+      if (this.isActiveOrderType(orderType)) {
+        // 相同则修改 desc / asc
+        newOrder += this.isDesc() === 'icon-up' ? 'asc' : 'desc'
+      } else {
+        // 不同修改成 desc 即可
+        newOrder += 'desc'
+      }
+      this.searchObj.order = newOrder;
+      this.fetchData();
+    },
   },
   components: {
     SearchSelector
@@ -327,6 +337,13 @@ export default {
                   background: #e1251b;
                   color: #fff;
                 }
+                .iconfont {
+                  display: inline;
+                }
+              }
+
+              .iconfont {
+                display: none;
               }
             }
           }
