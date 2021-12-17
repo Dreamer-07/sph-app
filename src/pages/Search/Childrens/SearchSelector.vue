@@ -15,8 +15,8 @@
     <div class="type-wrap" v-for="attr in attrsList" :key="attr.attrId">
       <div class="fl key">{{ attr.attrName }}</div>
       <div class="fl value">
-        <ul class="type-list" v-for="attrValue in attr.attrValueList">
-          <li>
+        <ul class="type-list" v-for="(attrValue, index) in attr.attrValueList" :key="index">
+          <li @click="selectAttr(attr, attrValue)">
             <a>{{ attrValue }}</a>
           </li>
         </ul>
@@ -37,6 +37,10 @@ export default {
   methods: {
     selectTrademark(tmId, tmName) {
       this.$emit('selectTrademark', tmId, tmName)
+    },
+    // 选择销售属性
+    selectAttr({attrId, attrName}, attrValue) {
+      this.$emit('selectAttr', attrId, attrValue, attrName)
     }
   }
 }

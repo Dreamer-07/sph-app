@@ -23,12 +23,15 @@
               {{ searchObj.trademark.split(":")[1] }}
               <i @click="removeTrademark">×</i>
             </li>
-
+            <li class="with-x" v-for="(attr, index) in this.searchObj.props">
+              {{ attr.split(":")[1] }}
+              <i @click="removeAttr(index)">×</i>
+            </li>
           </ul>
         </div>
 
         <!--selector-->
-        <SearchSelector @selectTrademark="selectTrademark"/>
+        <SearchSelector @selectTrademark="selectTrademark" @selectAttr="selectAttr"/>
 
         <!--details-->
         <div class="details clearfix">
@@ -156,6 +159,14 @@ export default {
       this.searchObj.trademark = `${tmId}:${tmName}`
       this.fetchData()
     },
+    // 选择销售属性
+    selectAttr(attrId, attrValue, attrName) {
+      let prop = `${attrId}:${attrValue}:${attrName}`;
+      if (this.searchObj.props.indexOf(prop) === -1) {
+        this.searchObj.props.push(prop);
+        this.fetchData();
+      }
+    },
     // 删除分类名
     removeCategoryName() {
       this.searchObj.categoryName = undefined;
@@ -176,6 +187,11 @@ export default {
     // 删除品牌选择
     removeTrademark() {
       this.searchObj.trademark = '';
+      this.fetchData();
+    },
+    // 删除销售属性
+    removeAttr(index) {
+      this.searchObj.props.splice(index, 1);
       this.fetchData();
     }
   },
