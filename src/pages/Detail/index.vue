@@ -75,9 +75,9 @@
             </div>
             <div class="cartWrap">
               <div class="controls">
-                <input autocomplete="off" class="itxt">
-                <a href="javascript:" class="plus">+</a>
-                <a href="javascript:" class="mins">-</a>
+                <input autocomplete="off" class="itxt" v-model="skuNum" @input="updateSkuNum">
+                <a href="javascript:" class="plus" @click="skuNum++">+</a>
+                <a href="javascript:" class="mins" @click="skuNum > 1 ? skuNum-- : skuNum = 1">-</a>
               </div>
               <div class="add">
                 <a href="javascript:">加入购物车</a>
@@ -343,15 +343,30 @@ export default {
     Zoom
   },
 
-  computed: {
-    ...mapGetters(['detailCategoryView', 'detailSkuInfo', 'detailSpuSaleAttrList'])
+  data() {
+    return {
+      skuNum: 1
+    }
   },
 
   methods: {
     // 修改选中的 spu 属性
     changeActiveSpuSaleAttr(spuSaleAttrValueList, index) {
       spuSaleAttrValueList.forEach((item, idx) => item.isChecked = (idx !== index ? 0 : 1));
+    },
+    // 修改选中的 sku 数量
+    updateSkuNum(event) {
+      let value = event.target.value * 1;
+      // 通过 * 1 判断 value 值是否为 NaN
+      if (isNaN(value) || value < 1) {
+        value = 1;
+      }
+      this.skuNum = parseInt(value);
     }
+  },
+
+  computed: {
+    ...mapGetters(['detailCategoryView', 'detailSkuInfo', 'detailSpuSaleAttrList'])
   },
 
   mounted() {
