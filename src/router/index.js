@@ -5,6 +5,7 @@ import Home from '@/pages/Home'
 import Search from '@/pages/Search'
 import Login from '@/pages/Login'
 import Register from '@/pages/Register'
+import Detail from '@/pages/Detail'
 
 Vue.use(VueRouter)
 
@@ -16,14 +17,18 @@ VueRouter.prototype.push = function (options, reject, resolve) {
     if (reject && resolve) {
         originPush.call(this, options, reject, resolve)
     } else {
-        originPush.call(this, options, () => {}, () => {})
+        originPush.call(this, options, () => {
+        }, () => {
+        })
     }
 }
 VueRouter.prototype.replace = function (options, reject, resolve) {
     if (reject && resolve) {
         originReplace.call(this, options, reject, resolve)
     } else {
-        originReplace.call(this, options, () => {}, () => {})
+        originReplace.call(this, options, () => {
+        }, () => {
+        })
     }
 }
 
@@ -65,9 +70,21 @@ const routes = [
         meta: {
             showFooter: false
         }
+    },
+    {
+        name: 'detail',
+        path: '/detail/:skuId',
+        component: Detail,
+        meta: {
+            showFooter: true
+        }
     }
 ]
 
 export default new VueRouter({
-    routes
+    routes,
+    // 配置 vue router 滚动行为
+    scrollBehavior(to, from, savedpPosition) {
+        return {y: 0}
+    }
 })

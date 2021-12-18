@@ -685,6 +685,24 @@ watch: {
 }
 ```
 
+### Vue Router 滚动行为
+
+官方文档：https://router.vuejs.org/zh/guide/advanced/scroll-behavior.html#%E5%BC%82%E6%AD%A5%E6%BB%9A%E5%8A%A8
+
+作用：可以跳转 vue 进行路由跳转后新页面的滚动条位置
+
+使用：在 `router/index.js` 中进行相关配置
+
+```javascript
+export default new VueRouter({
+    routes,
+    // 配置 vue router 滚动行为
+    scrollBehavior(to, from, savedpPosition) {
+        return {y: 0}
+    }
+})
+```
+
 ## 性能优化
 
 1. 目标：全局组件中的数据获取一次即可

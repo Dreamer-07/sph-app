@@ -21,5 +21,9 @@ export default {
         url: '/list',
         method: 'post',
         data: searchObj
+    }),
+    getProducetDetailInfo: (skuId) => request({
+        url: `/item/${skuId}`,
+        method: 'get'
     })
 }

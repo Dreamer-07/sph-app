@@ -28,9 +28,9 @@ const actions = {
 
 // 通过 getters 简化获取数据的步骤
 const getters = {
-    attrsList: (state) => state.productInfo.attrsList,
-    goodsList: (state) => state.productInfo.goodsList,
-    trademarkList: (state) => state.productInfo.trademarkList
+    attrsList: (state) => state.productInfo.attrsList || [],
+    goodsList: (state) => state.productInfo.goodsList || [],
+    trademarkList: (state) => state.productInfo.trademarkList || []
 }
 
 export default {

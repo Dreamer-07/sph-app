@@ -23,14 +23,14 @@ import Swiper from "swiper";
 
 export default {
   name: "Carousel",
-  props: ['list'],
+  props: ['list', 'options'],
   watch: {
     list: {
       // 无论数据是否发生变化，都先执行一遍
       immediate: true,
       handler(newValue, oldValue) {
         this.$nextTick(() => {
-          let swiper = new Swiper(this.$refs.customSwiper, {
+          let swiper = new Swiper(this.$refs.customSwiper, this.options || {
             loop: true, // 循环模式选项
 
             // 如果需要分页器
