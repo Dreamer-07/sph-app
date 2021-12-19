@@ -80,7 +80,7 @@
                 <a href="javascript:" class="mins" @click="skuNum > 1 ? skuNum-- : skuNum = 1">-</a>
               </div>
               <div class="add">
-                <a href="javascript:">加入购物车</a>
+                <a href="javascript:" @click="addShopCart">加入购物车</a>
               </div>
             </div>
           </div>
@@ -362,6 +362,41 @@ export default {
         value = 1;
       }
       this.skuNum = parseInt(value);
+    },
+    // 添加到购物测
+    async addShopCart() {
+      try {
+        // 调用 vuex 中的 action
+        await this.$store.dispatch("addShopCart", {
+          skuId: this.$route.params.skuId,
+          skuNum: this.skuNum
+        })
+        // 将 skuInfo 保存到会话存储中
+        let {skuName, skuDefaultImg, id} = this.detailSkuInfo;
+        let skuAttrInfoList = [];
+        this.detailSpuSaleAttrList.forEach(spuSaleAttr => {
+          let checkAttr = spuSaleAttr.spuSaleAttrValueList
+              .filter(value => value.isChecked == 1)
+              .map(value => ({
+                name: value.saleAttrName,
+                value: value.saleAttrValueName
+              }));
+          skuAttrInfoList.push(...checkAttr);
+        })
+        let skuInfo = {
+          skuId: id,
+          skuName,
+          skuDefaultImg,
+          skuAttrInfoList
+        }
+        sessionStorage.setItem("SKUINFO", JSON.stringify(skuInfo))
+        // 如果成功执行就进行路由跳转
+        this.$router.push({
+          name: 'addcartsuccess', query: {skuNum: this.skuNum}
+        })
+      } catch (error) {
+        console.error(error.message)
+      }
     }
   },
 

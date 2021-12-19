@@ -22,8 +22,14 @@ export default {
         method: 'post',
         data: searchObj
     }),
+    // 获取商品详情信息
     getProducetDetailInfo: (skuId) => request({
         url: `/item/${skuId}`,
         method: 'get'
+    }),
+    // 添加商品到购物车
+    addShopCart: (skuId, skuNum) => request({
+        url: `/cart/addToCart/${skuId}/${skuNum}`,
+        method: 'post'
     })
 }

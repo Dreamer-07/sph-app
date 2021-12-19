@@ -6,6 +6,8 @@ import Search from '@/pages/Search'
 import Login from '@/pages/Login'
 import Register from '@/pages/Register'
 import Detail from '@/pages/Detail'
+import AddCartSuccess from '@/pages/AddCartSuccess'
+import ShopCart from '@/pages/ShopCart'
 
 Vue.use(VueRouter)
 
@@ -75,6 +77,22 @@ const routes = [
         name: 'detail',
         path: '/detail/:skuId',
         component: Detail,
+        meta: {
+            showFooter: true
+        }
+    },
+    {
+        name: 'addcartsuccess',
+        path: '/addcartsuccess',
+        component: AddCartSuccess,
+        meta: {
+            showFooter: true
+        }
+    },
+    {
+        name: 'shopcart',
+        path: '/shopcart',
+        component: ShopCart,
         meta: {
             showFooter: true
         }
