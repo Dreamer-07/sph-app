@@ -741,6 +741,97 @@ export default new VueRouter({
 })
 ```
 
+### Vue Router 导航守卫
+
+作用：又称为 **路由守卫**， 可以实时监控**路由跳转的过程**，简单理解就是路由跳转过程中的一些钩子函数
+
+官方文档：https://router.vuejs.org/zh/guide/advanced/navigation-guards.html
+
+#### 全局前置守卫 beforeEach
+
+在路由跳转前触发，参数包括`to,from,next`三个，这个钩子作用主要是用于登录验证，也就是路由还没跳转提前告知，以免跳转了再通知就为时已晚。
+
+```javascript
+const router = new VueRouter({ ... })
+
+router.beforeEach((to, from, next) => {
+  // ...
+})
+```
+
+#### 全局解析守卫 beforeResolve
+
+也是在路由跳转前触发，参数也是 `to,from,next` 三个，和 **beforeEach** 区别在于只有在所有 **组件内守卫** 和 **异步路由组件** 被解析之后，解析守卫才会被调用
+
+#### 全局后置守卫 afterEach
+
+和 **beforeEach** 相反，只有在路由跳转完成后才会触发，参数中只有 `to, from`,发生在 `beforeEach` & `beforeResolve` 之后
+
+#### 路由独享守卫
+
+可以针对一个路由专门进行守卫配置，目前只有一个 `beforeEnter` 钩子函数
+
+```javascript
+const router = new VueRouter({
+    routes: [
+        {
+            path: '/foo',
+            component: Foo,
+            beforeEnter: (to, from, next) => {
+                // ...
+            }
+        }
+    ]
+})
+```
+
+`beforeEnter`和 `beforeEach` 完全相同，如果都设置则在 `beforeEach` 之后紧随执行，参数to、from、next
+
+#### 组件内的守卫
+
+类似于组件内的生命周期函数，包括 `beforeRouteEnter`、`beforeRouteUpdate`、`beforeRouteLeave` 
+
+- `beforeRouteEnter`: 路由进入之前调用，参数包括 `to, from, next`，
+
+  该钩子在全局守卫 `beforeEach` 和路由独享守卫 `beforeEnter` 之后，在全局 `beforeResolve` 和 `afterEach` 之前执行
+
+  注意：守卫内访问不到组件的实例，也就是 `this` 为 `undefined` ，也就是他在beforeCreate生命周期前触发。在这个钩子函数中，可以通过传一个回调给 next来访问组件实例。
+
+  ```javascript
+  beforeRouteEnter (to, from, next) {
+      // 这里还无法访问到组件实例，this === undefined
+      next( vm => {
+          // 通过 `vm` 访问组件实例
+      })
+  }
+  ```
+
+  
+
+- `beforeRouteUpdate`: 在 当前路由改变(路由query变更)/该组件被复用时调用，可以通过 this 访问实例，
+
+- `beforeRouteLeave`: 导航离开该组件时调用，可以访问组件实例this，参数包括to，from，next。
+
+#### 总结
+
+> 当切换路由时
+
+1. beforeRouterLeave 											组件内守卫
+2. beforeEach                                                           全局前置守卫
+3. beforeEnter                                                          路由独享守卫
+4. beforeRouteEnter                                               组件内守卫(进入路由之前，此时 this 还无法访问组件实例)
+5. beforeResolve                                                      全局解析守卫
+6. afterEach                                                               全局后置守卫
+7. beforeCreate                                                        生命周期
+8. created                                                                  生命周期
+9. beforeMount                                                        生命周期
+10. mounted                                                               生命周期
+11. beforeRouteEnter的next的回调                        组件内守卫
+
+> 当路由更新时
+
+beforeRouteUpdate 
+
 ## 性能优化
 
 1. 目标：全局组件中的数据获取一次即可

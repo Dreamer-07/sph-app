@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid'
+import {v4 as uuidv4} from 'uuid'
 
 export function getUUID() {
     // 从本地存储中获取
@@ -10,3 +10,12 @@ export function getUUID() {
     }
     return uuid;
 }
+
+// 获取 token
+export const getToken = () => localStorage.getItem('TOKEN');
+
+// 保存 token
+export const saveToken = (token) => token && localStorage.setItem('TOKEN', token);
+
+// 清除 token
+export const clearToken = () => localStorage.removeItem('TOKEN');
