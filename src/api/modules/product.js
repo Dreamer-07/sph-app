@@ -31,5 +31,19 @@ export default {
     addShopCart: (skuId, skuNum) => request({
         url: `/cart/addToCart/${skuId}/${skuNum}`,
         method: 'post'
+    }),
+    // 获取购物车列表
+    getShopCartList: () => request({
+        url: `/cart/cartList`,
+        method: 'get'
+    }),
+    // 删除购物车中的信息
+    delShopCartDetail: (skuId) => request({
+        url: `/cart/deleteCart/${skuId}`,
+        method: 'delete'
+    }),
+    updateShopCartDetailChecked: (skuId, checked) => request({
+        url: `/cart/checkCart/${skuId}/${checked}`,
+        method: 'get'
     })
 }

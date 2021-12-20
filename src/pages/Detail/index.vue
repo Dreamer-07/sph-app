@@ -367,7 +367,7 @@ export default {
     async addShopCart() {
       try {
         // 调用 vuex 中的 action
-        await this.$store.dispatch("addShopCart", {
+        await this.$store.dispatch("addOrUpdateShopCart", {
           skuId: this.$route.params.skuId,
           skuNum: this.skuNum
         })
@@ -397,7 +397,7 @@ export default {
       } catch (error) {
         console.error(error.message)
       }
-    }
+    },
   },
 
   computed: {

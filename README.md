@@ -334,6 +334,44 @@ destroyed() {
 this.$bus.$emit('updateKeyword', this.searchObj.keyword);
 ```
 
+### try catch - async await Promise
+
+通过 axios 发送请求时，会返回 **Promise** 对象，可以在方法名前加上 `async` 内部使用 `await` 快速获取 promise 对象中的值
+
+```javascript
+async addShopCart({commit}, {skuId, skuNum}) {
+    let result = await productApi.addShopCart(skuId, skuNum);
+}
+```
+
+根据 `result` 判断这次业务的执行是否成功，返回 `Promise.resolve` / `Promise.reject`
+
+```javascript
+async addShopCart({commit}, {skuId, skuNum}) {
+    let result = await productApi.addShopCart(skuId, skuNum);
+    if (result.code === 200) {
+        return Promise.resolve('success');
+    } else {
+        return Promise.reject("faild")
+    }
+}
+```
+
+在外层调用处可以通过 `try...catch` 进行相关处理
+
+```javascript
+try {
+    // 调用 vuex 中的 action
+    await this.$store.dispatch("addShopCart", {
+        skuId: this.$route.params.skuId,
+        skuNum: this.skuNum
+    })
+    ...
+} catch (error) {
+    console.error(error.message)
+}
+```
+
 ## 业务逻辑扩展
 
 ### 重写 push & replcae 方法

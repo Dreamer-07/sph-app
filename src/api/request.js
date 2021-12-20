@@ -1,4 +1,5 @@
 import axios from "axios"
+import {getUUID} from "@/utils/uuid-token";
 import nprogress from 'nprogress'
 // 引入 nprogress 样式
 import 'nprogress/nprogress.css'
@@ -15,6 +16,8 @@ const request = axios.create({
 request.interceptors.request.use(config => {
     // 开启进度条
     nprogress.start();
+    // 设置 UUID
+    config.headers.userTempId = getUUID();
     return config;
 })
 
