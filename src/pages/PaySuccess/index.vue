@@ -20,6 +20,18 @@
 <script>
   export default {
     name: 'PaySuccess',
+    // 设置组件内守卫
+    beforeRouteEnter: (to, from, next) => {
+      if (from.path === '/pay') {
+        next()
+      } else {
+        next('/home')
+      }
+    },
+    beforeRouteLeave: (to, from, next) => {
+      console.log('离开组件时触发')
+      next()
+    }
   }
 </script>
 

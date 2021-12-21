@@ -119,7 +119,15 @@ const routes = [
         component: Pay,
         meta: {
             showFooter: true
-        }
+        },
+        // 设置路由独享守卫
+        beforeEnter: (to, from, next) => {
+            if (from.path === '/trade') {
+                next()
+            } else {
+                next(false)
+            }
+        },
     },
     {
         name: 'paysuccess',
@@ -160,8 +168,8 @@ const router = new VueRouter({
     }
 });
 
-
-const needAuthURL = [];
+// 配置需要认证的 URL 路径
+const needAuthURL = ['/center', '/pay', '/trade'];
 // 配置全局前置守卫
 router.beforeEach(async (to, from, next) => {
     // 判断用户是否已经登录
@@ -189,7 +197,11 @@ router.beforeEach(async (to, from, next) => {
         }
     } else {
         // 还未登录 - 直接放行
-        next();
+        if(needAuthURL.every(url => to.path.indexOf(url) === -1)){
+            next();
+        } else {
+            next(`/login?redirect=${to.path}`)
+        }
     }
 })
 

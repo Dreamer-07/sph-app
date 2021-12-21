@@ -79,7 +79,7 @@ export default {
       try {
         let { phone, password } = this;
         await this.$store.dispatch('userLogin', {phone, password});
-        this.$router.push("/home");
+        this.$router.push((this.$route.query.redirect || '/home'));
       } catch (e) {
         alert(e.message)
       }
