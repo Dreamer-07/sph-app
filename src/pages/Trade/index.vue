@@ -34,13 +34,13 @@
             <img :src="tradeDetail.imgUrl" style="width: 100px; height: 100px">
           </li>
           <li>
-            <p>{{tradeDetail.skuName}}</p>
+            <p>{{ tradeDetail.skuName }}</p>
             <h4>7天无理由退货</h4>
           </li>
           <li>
-            <h3>￥{{tradeDetail.orderPrice}}</h3>
+            <h3>￥{{ tradeDetail.orderPrice }}</h3>
           </li>
-          <li>X{{tradeDetail.skuNum}}</li>
+          <li>X{{ tradeDetail.skuNum }}</li>
           <li>有货</li>
         </ul>
       </div>
@@ -82,7 +82,7 @@
       </div>
     </div>
     <div class="sub clearFix">
-      <router-link class="subBtn" to="/pay">提交订单</router-link>
+      <a class="subBtn" @click="submitOrder">提交订单</a>
     </div>
   </div>
 </template>
@@ -94,7 +94,8 @@ export default {
   name: 'Trade',
   data() {
     return {
-      msg: ''
+      msg: '',
+      orderId: ''
     }
   },
   computed: {
@@ -109,6 +110,26 @@ export default {
   methods: {
     updateDefaultAddress(index) {
       this.addressList.forEach((item, idx) => item.isDefault = index === idx ? "1" : "0")
+    },
+    // 提交订单
+    async submitOrder() {
+      let {tradeNo} = this.orderTradeInfo;
+      let orderInfo = {
+        consignee: this.defaultAddress.consignee,
+        consigneeTel: this.defaultAddress.phoneNum,
+        deliveryAddress: this.defaultAddress.fullAddress,
+        paymentWay: "ONLINE",
+        orderComment: this.msg,
+        orderDetailList: this.orderTradeInfo.detailArrayList
+      }
+      let result = await this.$api.order.submitOrder(tradeNo, orderInfo)
+      if (result.code === 200) {
+        this.orderId = result.data;
+        // 进行路由跳转
+        this.$router.push({ name: 'pay', query: { orderId: this.orderId }});
+      } else {
+        alert(result.message)
+      }
     }
   },
   mounted() {

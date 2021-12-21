@@ -372,6 +372,76 @@ try {
 }
 ```
 
+### 按需加载 element-ui 
+
+1. 安装 `element-ui`
+
+   ```powershell
+   npm install --save element-ui
+   ```
+
+2. 安装 ` babel-plugin-component`(按需引入)
+
+   ```powershell
+   npm install babel-plugin-component -D
+   ```
+
+3. 配置 `babel` 文件
+
+   - `.babelrc`
+
+     ```
+     {
+         "presets": [["es2015", { "modules": false }]],
+         "plugins": [
+             [
+                 "component",
+                 {
+                     "libraryName": "element-ui",
+                     "styleLibraryName": "theme-chalk"
+                 }
+             ]
+         ]
+     }
+     ```
+
+   - `babel.config.js`
+
+     ```js
+     module.exports = {
+         presets: [
+             '@vue/cli-plugin-babel/preset'
+         ],
+         plugins: [
+             [
+                 "component",
+                 {
+                     "libraryName": "element-ui",
+                     "styleLibraryName": "theme-chalk"
+                 }
+             ]
+         ]
+     }
+     ```
+
+4. 创建 `utils/element-ui.js` 文件，在这里统一配置需要引入的 element-ui 组件
+
+   ```javascript
+   import Vue from "vue";
+   import {MessageBox} from "element-ui";
+   
+   Vue.prototype.$alert = MessageBox.alert
+   ```
+
+5. 在 `main.js` 引入
+
+   ```javascript
+   // 引入 element-ui
+   import '@/utils/element-ui'
+   ```
+
+6. 根据注册组件的不同方式，在 Vue 中使用即可
+
 ## 业务逻辑扩展
 
 ### 重写 push & replcae 方法
@@ -832,9 +902,41 @@ const router = new VueRouter({
 
 beforeRouteUpdate 
 
+### 微信支付业务
+
+> 生成对应的支付二维码
+
+1. 安装 `qrcode`
+
+   ```powershell
+   npm install --save qrcode
+   ```
+
+2. 在需要生成二维码的地方使用，**toDateURL** 中应该传入后端返回的  **二维码地址**
+
+   ```javascript
+   // 打开微信支付
+   async openWxPay() {
+       // 加载微信支付二维码
+       let url = await QRCode.toDataURL(this.payInfo.codeUrl)
+   ```
+
+> 通过定时器监听微信支付状态
+
+1. 在显示微信二维码后，通过定时器回调函数查询支付状态
+
+   ```javascript
+   this.timer = setInterval(async () => {
+             let result = await this.$api.payment.getPayStatus(this.$route.query.orderId)
+   ```
+
+2. 注意：应该根据查询 `result` 结果判断是否需要关闭定时器
+
+   ![image-20211221130638990](README.assets/image-20211221130638990.png)
+
 ## 性能优化
 
-1. 目标：全局组件中的数据获取一次即可
+- 目标：全局组件中的数据获取一次即可
 
    原因：对于全局组件中所需要的数据，不建议在对应的全局组件的 `mounted()` 生命周期时获取，因为全局组件在 SPA 单页应用中，`mounted()` 会被执行多次，导致向服务器发送过多的无效请求
 
@@ -847,6 +949,6 @@ beforeRouteUpdate
    }
    ```
 
-   
+- 尽量避免在生命周期函数上使用 **async** 关键字
 
-   
+  

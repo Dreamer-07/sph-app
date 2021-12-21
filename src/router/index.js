@@ -9,6 +9,8 @@ import Detail from '@/pages/Detail'
 import AddCartSuccess from '@/pages/AddCartSuccess'
 import ShopCart from '@/pages/ShopCart'
 import Trade from '@/pages/Trade'
+import Pay from '@/pages/Pay'
+import PaySuccess from '@/pages/PaySuccess'
 
 import {getToken} from '@/utils/uuid-token'
 import store from '@/store/index'
@@ -106,6 +108,22 @@ const routes = [
         component: Trade,
         meta: {
             showFooter: false
+        }
+    },
+    {
+        name: 'pay',
+        path: '/pay',
+        component: Pay,
+        meta: {
+            showFooter: true
+        }
+    },
+    {
+        name: 'paysuccess',
+        path: '/paysuccess',
+        component: PaySuccess,
+        meta: {
+            showFooter: true
         }
     }
 ]
