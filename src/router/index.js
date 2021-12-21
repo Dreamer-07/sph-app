@@ -11,6 +11,9 @@ import ShopCart from '@/pages/ShopCart'
 import Trade from '@/pages/Trade'
 import Pay from '@/pages/Pay'
 import PaySuccess from '@/pages/PaySuccess'
+import Center from '@/pages/Center'
+import MyOrder from '@/pages/Center/Childrens/MyOrder'
+import GroupOrder from '@/pages/Center/Childrens/GroupOrder'
 
 import {getToken} from '@/utils/uuid-token'
 import store from '@/store/index'
@@ -125,6 +128,27 @@ const routes = [
         meta: {
             showFooter: true
         }
+    },
+    {
+        name: 'center',
+        path: '/center',
+        component: Center,
+        meta: {
+            showFooter: false
+        },
+        redirect: '/center/myorder',
+        children: [
+            {
+                name: 'myorder',
+                path: 'myorder',
+                component: MyOrder
+            },
+            {
+                name: 'grouporder',
+                path: 'grouporder',
+                component: GroupOrder
+            }
+        ]
     }
 ]
 
@@ -136,6 +160,8 @@ const router = new VueRouter({
     }
 });
 
+
+const needAuthURL = [];
 // 配置全局前置守卫
 router.beforeEach(async (to, from, next) => {
     // 判断用户是否已经登录

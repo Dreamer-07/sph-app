@@ -12,4 +12,9 @@ export default {
         method: 'post',
         data: orderInfo
     }),
+    // 获取订单信息
+    getOrderList: (page, limit) => request({
+        url: `/order/auth/${page}/${limit}`,
+        method: 'get'
+    })
 }
