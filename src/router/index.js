@@ -8,6 +8,7 @@ import Register from '@/pages/Register'
 import Detail from '@/pages/Detail'
 import AddCartSuccess from '@/pages/AddCartSuccess'
 import ShopCart from '@/pages/ShopCart'
+import Trade from '@/pages/Trade'
 
 import {getToken} from '@/utils/uuid-token'
 import store from '@/store/index'
@@ -22,9 +23,7 @@ VueRouter.prototype.push = function (options, reject, resolve) {
     if (reject && resolve) {
         originPush.call(this, options, reject, resolve)
     } else {
-        originPush.call(this, options, () => {
-        }, () => {
-        })
+        originPush.call(this, options, () => {}, () => {})
     }
 }
 VueRouter.prototype.replace = function (options, reject, resolve) {
@@ -99,6 +98,14 @@ const routes = [
         component: ShopCart,
         meta: {
             showFooter: true
+        }
+    },
+    {
+        name: 'trade',
+        path: '/trade',
+        component: Trade,
+        meta: {
+            showFooter: false
         }
     }
 ]

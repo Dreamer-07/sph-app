@@ -27,5 +27,10 @@ export default {
     logoutUser: () => request({
         url: `/user/passport/logout`,
         method: 'get'
+    }),
+    // 获取用户配置的地址信息
+    getAddressList: () => request({
+        url: `user/userAddress/auth/findUserAddressList`,
+        method: 'get'
     })
 }
