@@ -1,29 +1,27 @@
 # sph-app
 
-## 项目启动
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
-
 ## 项目介绍
+
+简介：基于 Vue2 全家桶搭建的电商平台系统
+
+项目地址：http://121.4.203.127/#/home
+
+仓库地址：https://github.com/Dreamer-07/sph-app
+
+技术点：
+
+- Vue2
+- VueRouter
+- Vuex
+- Axios
+- Element UI
+- Mock
+- Swiper
+- QRcode(微信支付二维码)
+- Vee Validate
+- Webpack
+- Nginx
+- Nprogress
 
 ## 基础知识补充
 
@@ -1024,6 +1022,68 @@ beforeRouteUpdate
    let isSuccess = await this.$validator.validateAll();
    if (isSuccess) {
    ```
+
+### 打包上线
+
+打包命令：`npm run build`
+
+> 处理 .map 文件：打包后，会对 JS 文件压缩加密，.map 文件主要是为了线上运行如果报错方便找错误，但并不是很需要
+
+打开 webpack 的配置文件，添加下列配置，这里 `vue.config.js`
+
+```js
+module.exports = {
+    publicPath: './',
+    // 关闭打包时生成 Map 文件
+    productionSourceMap: false,
+```
+
+重新打包即可
+
+> Nginx 反向代理
+
+1. 安装 nginx
+
+   ```powershell
+   npm install nginx
+   ```
+
+2. 进入 `/etc/nginx` 文件夹下
+
+   ```powershell
+   cd /etc/nginx
+   ```
+
+3. 通过 Xftp 等相关工具，将 dist(打包后的项目) 放到 linux 上，注意路径：不要出现中文
+
+4. 编辑 `nginx.conf`文件
+
+   ```
+   location / {
+       root         /root/prover07/www/sphapp/dist; 
+       index        index.html;
+       try_files    $uri $uri/ /index.html;
+   }
+   
+   location /api {
+       proxy_pass http:182.92.128.115;
+   }
+   
+   ```
+
+   这里的  `root` 就是刚刚放项目的文件夹路径
+
+   ![image-20211221191620636](README.assets/image-20211221191620636.png)
+
+5. 启动 nginx
+
+   ```powershell
+   systemctl start nginx
+   ```
+
+> Nginx 报错: nginx Permission denied
+
+![image-20211221195250083](README.assets/image-20211221195250083.png)
 
 ## 性能优化
 
