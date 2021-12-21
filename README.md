@@ -1,6 +1,6 @@
 # sph-app
 
-## Project setup
+## 项目启动
 ```
 npm install
 ```
@@ -1074,6 +1074,26 @@ mounted() {
    ```
 
 > 路由懒加载
+
+原因：当打包构建 Vue 项目时，JavaScript 包会变得非常大，会影响页面加载
+
+解决：使用路由懒加载，当只有路由被访问时才会加载的组件，提高**效率**
+
+使用：
+
+1. Vue 异步组件(TODO)
+
+2. ES 提出的 `import` 方法 -> 在 `router/index.js` 中修改配置
+
+   ```javascript
+   {
+           name: 'center',
+           path: '/center',
+           // 使用路由懒加载
+           component: () => import('@/pages/Center'),
+   ```
+
+   
 
 ### 注意事项
 

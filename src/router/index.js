@@ -1,20 +1,6 @@
 import Vue from 'vue'
 import VueRouter from "vue-router"
 
-import Home from '@/pages/Home'
-import Search from '@/pages/Search'
-import Login from '@/pages/Login'
-import Register from '@/pages/Register'
-import Detail from '@/pages/Detail'
-import AddCartSuccess from '@/pages/AddCartSuccess'
-import ShopCart from '@/pages/ShopCart'
-import Trade from '@/pages/Trade'
-import Pay from '@/pages/Pay'
-import PaySuccess from '@/pages/PaySuccess'
-import Center from '@/pages/Center'
-import MyOrder from '@/pages/Center/Childrens/MyOrder'
-import GroupOrder from '@/pages/Center/Childrens/GroupOrder'
-
 import {getToken} from '@/utils/uuid-token'
 import store from '@/store/index'
 
@@ -52,7 +38,7 @@ const routes = [
     {
         name: 'home',
         path: '/home',
-        component: Home,
+        component: () => import('@/pages/Home'),
         meta: {
             showFooter: true
         }
@@ -60,7 +46,7 @@ const routes = [
     {
         name: 'search',
         path: '/search',
-        component: Search,
+        component: () => import('@/pages/Search'),
         meta: {
             showFooter: true
         }
@@ -68,7 +54,7 @@ const routes = [
     {
         name: 'login',
         path: '/login',
-        component: Login,
+        component: () => import('@/pages/Login'),
         meta: {
             showFooter: false
         }
@@ -76,7 +62,7 @@ const routes = [
     {
         name: 'register',
         path: '/register',
-        component: Register,
+        component: () => import('@/pages/Register'),
         meta: {
             showFooter: false
         }
@@ -84,7 +70,7 @@ const routes = [
     {
         name: 'detail',
         path: '/detail/:skuId',
-        component: Detail,
+        component: () => import('@/pages/Detail'),
         meta: {
             showFooter: true
         }
@@ -92,7 +78,7 @@ const routes = [
     {
         name: 'addcartsuccess',
         path: '/addcartsuccess',
-        component: AddCartSuccess,
+        component: () => import('@/pages/AddCartSuccess'),
         meta: {
             showFooter: true
         }
@@ -100,7 +86,7 @@ const routes = [
     {
         name: 'shopcart',
         path: '/shopcart',
-        component: ShopCart,
+        component: () => import('@/pages/ShopCart'),
         meta: {
             showFooter: true
         }
@@ -108,7 +94,7 @@ const routes = [
     {
         name: 'trade',
         path: '/trade',
-        component: Trade,
+        component: () => import('@/pages/Trade'),
         meta: {
             showFooter: false
         }
@@ -116,7 +102,7 @@ const routes = [
     {
         name: 'pay',
         path: '/pay',
-        component: Pay,
+        component: () => import('@/pages/Pay'),
         meta: {
             showFooter: true
         },
@@ -132,7 +118,7 @@ const routes = [
     {
         name: 'paysuccess',
         path: '/paysuccess',
-        component: PaySuccess,
+        component: () => import('@/pages/PaySuccess'),
         meta: {
             showFooter: true
         }
@@ -140,7 +126,7 @@ const routes = [
     {
         name: 'center',
         path: '/center',
-        component: Center,
+        component: () => import('@/pages/Center'),
         meta: {
             showFooter: false
         },
@@ -149,12 +135,12 @@ const routes = [
             {
                 name: 'myorder',
                 path: 'myorder',
-                component: MyOrder
+                component: () => import('@/pages/Center/Childrens/MyOrder')
             },
             {
                 name: 'grouporder',
                 path: 'grouporder',
-                component: GroupOrder
+                component: () => import('@/pages/Center/Childrens/GroupOrder')
             }
         ]
     }
