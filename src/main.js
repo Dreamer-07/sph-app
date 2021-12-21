@@ -11,6 +11,18 @@ import '@/mock'
 // 引入 element-ui
 import '@/utils/element-ui'
 
+// 引入默认图片
+import defaultImg from '@/assets/images/default.gif'
+// 引入 vue-lazyload
+import VueLazyload from "vue-lazyload";
+
+// 引入 Vee-Validate
+import '@/plugins/validate'
+
+Vue.use(VueLazyload, {
+  loading: defaultImg
+})
+
 new Vue({
   render: h => h(App),
   // 配置全局消息总线

@@ -442,6 +442,10 @@ try {
 
 6. 根据注册组件的不同方式，在 Vue 中使用即可
 
+### 自定义插件
+
+ TODO: 挖坑
+
 ## 业务逻辑扩展
 
 ### 重写 push & replcae 方法
@@ -934,21 +938,144 @@ beforeRouteUpdate
 
    ![image-20211221130638990](README.assets/image-20211221130638990.png)
 
-## 性能优化
+### Vee Validate@2 表单验证
 
-- 目标：全局组件中的数据获取一次即可
+官方文档：https://github.com/logaretm/vee-validate
 
-   原因：对于全局组件中所需要的数据，不建议在对应的全局组件的 `mounted()` 生命周期时获取，因为全局组件在 SPA 单页应用中，`mounted()` 会被执行多次，导致向服务器发送过多的无效请求
+1. 安装依赖(因为3的不好用，先用2的就好了)
 
-   解决思路：在 **SPA** 单页应用环境中, **App.vue** 将作为根组件，其 `mounted()` 生命周期函数只会被执行一次，在通过 Vuex 进行数据管理，全局组件中只用获取 Vuex state 中保存的数据即可
-
-   ```javascript
-   mounted() {
-       // 获取全局组件中的需要的数据，避免多次发出请求(通过 Vuex 发送异步请求，将数据保存到 state )
-       this.$store.dispatch('getCategoryList')
-   }
+   ```powershell
+   npm i vee-validate@2 --save
    ```
 
-- 尽量避免在生命周期函数上使用 **async** 关键字
+2. 创建 `pulgins/validate.js` 文件，在这里进行相关配置
 
-  
+   ```javascript
+   import Vue from "vue";
+   import VeeValidate from "vee-validate";
+   // 引入中文包
+   import zh_CN from 'vee-validate/dist/locale/zh_CN'
+   
+   Vue.use(VeeValidate)
+   
+   // 配置 VeeValidate 校验规则
+   VeeValidate.Validator.localize('zh_CN', {
+       // 配置提示消息体
+       messages: {
+           ...zh_CN.messages,
+           is: (field) => `${field}必须要和密码相同`
+       },
+       // 配置属性
+       attributes: {
+           phone: '手机号',
+           phoneCode: '验证码',
+           password: '密码',
+           checkPassword: '确认密码',
+           isAggre: '协议'
+       }
+   })
+   
+   // 自定义校验规则
+   VeeValidate.Validator.extend('aggre', {
+       // 校验规则
+       validate: value => value,
+       // 错误信息
+       getMessage: field => field + "必须同意"
+   })
+   ```
+
+3. 在 `main.js` 中引入即可
+
+   ```javascript
+   // 引入 Vee-Validate
+   import '@/plugins/validate'
+   ```
+
+4. 在 `.vue` 中配置校验规则
+
+   ```html
+   <!-- 通过 name 和 v-validate 指令配置校验规则 -->
+   <input type="text" placeholder="请输入你的手机号" v-model="phone" name="phone"
+          v-validate="{ required: true, regex: /^1\d{10}$/  }" :class="{ invalid: errors.has('phone') }">
+   <span class="error-msg">{{ errors.first('phone') }}</span>
+   
+   
+   
+   <input type="password" placeholder="请输入你的登录密码" v-model="password" name="password"
+          v-validate="{ required: true, regex: /^[0-9a-zA-Z]{8,20}$/ }" :class="{ invalid: errors.has('password') }"
+          />
+   <span class="error-msg">{{ errors.first('password') }}</span>
+   
+   <!-- is 表示与指定字段的值必须相同 -->
+   <input type="password" placeholder="请输入确认密码" v-model="checkPassword" name="checkPassword"
+          v-validate="{ required: true, is: password }" :class="{ invalid: errors.has('checkPassword') }">
+   <span class="error-msg">{{ errors.first('checkPassword') }}</span>
+   
+   
+   <input type="checkbox" v-model="isAggre" name="isAggre"
+          v-validate="{ 'aggre': true }" :class="{ invalid: errors.has('isAggre') }">
+   <span class="error-msg">{{ errors.first('isAggre') }}</span>
+   ```
+
+5. 在提交事件时进行统一判断
+
+   ```javascript
+   // 进行规则校验
+   let isSuccess = await this.$validator.validateAll();
+   if (isSuccess) {
+   ```
+
+## 性能优化
+
+### 全局组件重复请求数据
+
+目标：全局组件中的数据获取一次即可
+
+原因：对于全局组件中所需要的数据，不建议在对应的全局组件的 `mounted()` 生命周期时获取，因为全局组件在 SPA 单页应用中，`mounted()` 会被执行多次，导致向服务器发送过多的无效请求
+
+解决思路：在 **SPA** 单页应用环境中, **App.vue** 将作为根组件，其 `mounted()` 生命周期函数只会被执行一次，在通过 Vuex 进行数据管理，全局组件中只用获取 Vuex state 中保存的数据即可
+
+```javascript
+mounted() {
+    // 获取全局组件中的需要的数据，避免多次发出请求(通过 Vuex 发送异步请求，将数据保存到 state )
+    this.$store.dispatch('getCategoryList')
+}
+```
+
+### 懒加载
+
+> 图片懒加载：https://github.com/hilongjw/vue-lazyload
+
+1. 下载插件 `vue-lazylaod` 
+
+   ```powershell
+   npm install vue-lazyload --save
+   ```
+
+2. 在 `main.js` 中引入
+
+   ```javascript
+   // 引入默认图片
+   import defaultImg from '@/assets/images/default.gif'
+   // 引入 vue-lazyload
+   import VueLazyload from "vue-lazyload";
+   
+   Vue.use(VueLazyload, {
+       loading: defaultImg
+   })
+   ```
+
+3. 在 `img` 标签中使用 `v-lazy` 指令
+
+   ```html
+   <router-link :to="`/detail/${good.id}`">
+       <img v-lazy="good.defaultImg"/>
+   </router-link>
+   ```
+
+> 路由懒加载
+
+### 注意事项
+
+1. 尽量避免在生命周期钩子函数上使用 **async** 修饰
+
